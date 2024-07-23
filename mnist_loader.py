@@ -21,16 +21,25 @@ def load_data(labels_path, images_path):
 
     return images, labels
 
+
 def structured_load():
     # training data
     tr_i, tr_l = load_data("./data/train-labels.idx1-ubyte", "./data/train-images.idx3-ubyte")
+    tr_i = tr_i.astype(np.float64) / 255.0  # Normalize pixel values to [0, 1]
     tr_l = [vectorized_result(y) for y in tr_l]
 
     te_i, te_l = load_data("./data/t10k-labels.idx1-ubyte", "./data/t10k-images.idx3-ubyte")
-    #te_l = [vectorized_result(y) for y in te_l]
+    te_i = te_i.astype(np.float64) / 255.0  # Normalize pixel values to [0, 1]
+    # te_l = [vectorized_result(y) for y in te_l]
 
-    return (list(zip(tr_i,tr_l)), list(zip(te_i,te_l)))
+    # Reshape images to be column vectors
+    tr_i = [img.reshape(-1, 1) for img in tr_i]
+    te_i = [img.reshape(-1, 1) for img in te_i]
 
+    print(f"Training data shape: {tr_i[0].shape}, Label shape: {tr_l[0].shape}")
+    print(f"Test data shape: {te_i[0].shape}, Label shape: {te_l[0].shape}")
+
+    return (list(zip(tr_i, tr_l)), list(zip(te_i, te_l)))
 
 def vectorized_result(j):
     """Return a 10-dimensional unit vector with a 1.0 in the jth
